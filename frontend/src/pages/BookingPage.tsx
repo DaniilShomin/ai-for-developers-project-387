@@ -921,7 +921,7 @@ export function BookingPage() {
           Подтверждение записи
         </Title>
 
-        <Grid gutter="xl">
+        <Grid gutter="xl" align="stretch">
           {/* Left Panel - Information */}
           <Grid.Col span={{ base: 12, md: 5 }}>
             <Paper
