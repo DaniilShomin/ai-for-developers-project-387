@@ -1,0 +1,713 @@
+openapi: 3.0.0
+info:
+  title: (title)
+  version: 0.0.0
+tags:
+  - name: Owner
+  - name: Event Types
+  - name: Time Slots
+  - name: Bookings
+paths:
+  /bookings:
+    get:
+      operationId: Bookings_list
+      summary: Список бронирований
+      description: Получить список бронирований владельца. Используется для страницы предстоящих встреч.
+      parameters:
+        - $ref: '#/components/parameters/ListBookingsRequest.ownerId'
+        - $ref: '#/components/parameters/ListBookingsRequest.status'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookingWithDetails'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Bookings
+    post:
+      operationId: Bookings_create
+      summary: Создать бронирование
+      description: Создать новое бронирование. Гость выбирает тип события, владельца и время из доступных слотов. Нельзя создать две брони на одно и то же время.
+      parameters: []
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: The request conflicts with the current state of the server.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Bookings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingCreate'
+  /bookings/{id}:
+    delete:
+      operationId: Bookings_cancel
+      summary: Отменить бронирование
+      description: Отменить бронирование (soft delete)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: The request conflicts with the current state of the server.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Bookings
+  /event-types:
+    get:
+      operationId: EventTypes_list
+      summary: Список типов событий
+      description: Получить список типов событий владельца (публичный endpoint для гостей)
+      parameters:
+        - name: ownerId
+          in: query
+          required: true
+          schema:
+            type: string
+          explode: false
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventType'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Event Types
+    post:
+      operationId: EventTypes_create
+      summary: Создать тип события
+      description: Создать новый тип события (только для владельца)
+      parameters: []
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventType'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Event Types
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventTypeCreate'
+  /event-types/{id}:
+    get:
+      operationId: EventTypes_get
+      summary: Детали типа события
+      description: Получить детали типа события
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventType'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Event Types
+    put:
+      operationId: EventTypes_update
+      summary: Обновить тип события
+      description: Обновить тип события (только для владельца)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventType'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Event Types
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventTypeUpdate'
+    delete:
+      operationId: EventTypes_delete
+      summary: Удалить тип события
+      description: Удалить тип события (только для владельца)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: The request conflicts with the current state of the server.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Event Types
+  /owner:
+    get:
+      operationId: OwnerController_get
+      summary: Данные владельца
+      description: Получить профиль дефолтного владельца календаря
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Owner'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Owner
+  /timeslots:
+    get:
+      operationId: TimeSlots_list
+      summary: Список доступных слотов
+      description: Получить список доступных временных слотов. Слоты генерируются автоматически на 14 дней вперёд с шагом, равным длительности выбранного типа события.
+      parameters:
+        - $ref: '#/components/parameters/ListTimeSlotsRequest.ownerId'
+        - $ref: '#/components/parameters/ListTimeSlotsRequest.eventTypeId'
+        - $ref: '#/components/parameters/ListTimeSlotsRequest.dateFrom'
+        - $ref: '#/components/parameters/ListTimeSlotsRequest.dateTo'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TimeSlot'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Time Slots
+components:
+  parameters:
+    ListBookingsRequest.ownerId:
+      name: ownerId
+      in: query
+      required: true
+      description: ID владельца (обязательно для получения списка)
+      schema:
+        type: string
+      explode: false
+    ListBookingsRequest.status:
+      name: status
+      in: query
+      required: false
+      description: Статус бронирования
+      schema:
+        $ref: '#/components/schemas/BookingStatus'
+      explode: false
+    ListTimeSlotsRequest.dateFrom:
+      name: dateFrom
+      in: query
+      required: false
+      description: Начальная дата (по умолчанию текущая дата)
+      schema:
+        type: string
+        format: date-time
+      explode: false
+    ListTimeSlotsRequest.dateTo:
+      name: dateTo
+      in: query
+      required: false
+      description: Конечная дата (по умолчанию текущая дата + 14 дней)
+      schema:
+        type: string
+        format: date-time
+      explode: false
+    ListTimeSlotsRequest.eventTypeId:
+      name: eventTypeId
+      in: query
+      required: false
+      description: ID типа события (для фильтрации по длительности)
+      schema:
+        type: string
+      explode: false
+    ListTimeSlotsRequest.ownerId:
+      name: ownerId
+      in: query
+      required: true
+      description: ID владельца (обязательно)
+      schema:
+        type: string
+      explode: false
+  schemas:
+    Booker:
+      type: object
+      required:
+        - id
+        - name
+        - email
+        - createdAt
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор
+        name:
+          type: string
+          description: Имя
+        email:
+          type: string
+          description: Email для связи
+        phone:
+          type: string
+          description: Телефон (опционально)
+        createdAt:
+          type: string
+          format: date-time
+          description: Дата создания
+      description: Booker - Пользователь, записывающийся на встречу
+    Booking:
+      type: object
+      required:
+        - id
+        - eventTypeId
+        - ownerId
+        - bookerId
+        - startTime
+        - endTime
+        - status
+        - createdAt
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор
+        eventTypeId:
+          type: string
+          description: ID типа события
+        ownerId:
+          type: string
+          description: ID владельца
+        bookerId:
+          type: string
+          description: ID записывающегося
+        startTime:
+          type: string
+          format: date-time
+          description: Время начала
+        endTime:
+          type: string
+          format: date-time
+          description: Время окончания
+        notes:
+          type: string
+          description: Заметки к встрече
+        status:
+          allOf:
+            - $ref: '#/components/schemas/BookingStatus'
+          description: Статус бронирования
+        createdAt:
+          type: string
+          format: date-time
+          description: Дата создания
+      description: Booking - Бронирование временного слота
+    BookingCreate:
+      type: object
+      required:
+        - eventTypeId
+        - ownerId
+        - startTime
+        - bookerName
+        - bookerEmail
+      properties:
+        eventTypeId:
+          type: string
+          description: ID типа события
+        ownerId:
+          type: string
+          description: ID владельца календаря
+        startTime:
+          type: string
+          format: date-time
+          description: Время начала бронирования (должно быть в окне 14 дней)
+        bookerName:
+          type: string
+          description: Имя записывающегося
+        bookerEmail:
+          type: string
+          description: Email записывающегося
+        bookerPhone:
+          type: string
+          description: Телефон (опционально)
+        notes:
+          type: string
+          description: Заметки
+      description: Данные для создания бронирования
+    BookingStatus:
+      type: string
+      enum:
+        - confirmed
+        - cancelled
+      description: Статус бронирования
+    BookingWithDetails:
+      type: object
+      required:
+        - id
+        - eventTypeId
+        - ownerId
+        - bookerId
+        - startTime
+        - endTime
+        - status
+        - createdAt
+        - eventType
+        - booker
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор
+        eventTypeId:
+          type: string
+          description: ID типа события
+        ownerId:
+          type: string
+          description: ID владельца
+        bookerId:
+          type: string
+          description: ID записывающегося
+        startTime:
+          type: string
+          format: date-time
+          description: Время начала
+        endTime:
+          type: string
+          format: date-time
+          description: Время окончания
+        notes:
+          type: string
+          description: Заметки
+        status:
+          allOf:
+            - $ref: '#/components/schemas/BookingStatus'
+          description: Статус
+        createdAt:
+          type: string
+          format: date-time
+          description: Дата создания
+        eventType:
+          allOf:
+            - $ref: '#/components/schemas/EventType'
+          description: Данные типа события
+        booker:
+          allOf:
+            - $ref: '#/components/schemas/Booker'
+          description: Данные записывающегося
+      description: Бронирование с полными деталями
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Код ошибки
+        message:
+          type: string
+          description: Сообщение об ошибке
+      description: Стандартная модель ошибки
+    EventType:
+      type: object
+      required:
+        - id
+        - title
+        - duration
+        - ownerId
+        - createdAt
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор
+        title:
+          type: string
+          description: Название типа события
+        description:
+          type: string
+          description: Описание
+        duration:
+          type: integer
+          format: int32
+          description: Длительность в минутах
+        ownerId:
+          type: string
+          description: ID владельца
+        createdAt:
+          type: string
+          format: date-time
+          description: Дата создания
+      description: EventType - Тип события/бронирования. Владелец создаёт типы с названием, описанием и длительностью.
+    EventTypeCreate:
+      type: object
+      required:
+        - title
+        - duration
+        - ownerId
+      properties:
+        title:
+          type: string
+          description: Название типа события
+        description:
+          type: string
+          description: Описание
+        duration:
+          type: integer
+          format: int32
+          description: Длительность в минутах
+        ownerId:
+          type: string
+          description: ID владельца
+      description: Данные для создания типа события
+    EventTypeUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Название типа события
+        description:
+          type: string
+          description: Описание
+        duration:
+          type: integer
+          format: int32
+          description: Длительность в минутах
+      description: Данные для обновления типа события
+    Owner:
+      type: object
+      required:
+        - id
+        - name
+        - email
+        - timezone
+        - createdAt
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор
+        name:
+          type: string
+          description: Имя владельца
+        email:
+          type: string
+          description: Email владельца
+        timezone:
+          type: string
+          description: Часовой пояс
+        createdAt:
+          type: string
+          format: date-time
+          description: Дата создания
+      description: Owner - Владелец календаря
+    TimeSlot:
+      type: object
+      required:
+        - id
+        - ownerId
+        - startTime
+        - endTime
+        - isBooked
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор (генерируется на лету)
+        ownerId:
+          type: string
+          description: ID владельца
+        startTime:
+          type: string
+          format: date-time
+          description: Время начала слота
+        endTime:
+          type: string
+          format: date-time
+          description: Время окончания (startTime + duration типа события)
+        eventTypeId:
+          type: string
+          description: ID типа события, если слот занят
+        isBooked:
+          type: boolean
+          description: Забронирован ли слот
+      description: TimeSlot - Свободный временной слот для бронирования. Слоты генерируются автоматически на 14 дней вперёд.
+servers:
+  - url: https://api.booking.example.com/v1
+    description: Production
+    variables: {}
+  - url: http://localhost:8000/api/v1
+    description: Local development
+    variables: {}

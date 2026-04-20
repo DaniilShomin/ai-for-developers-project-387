@@ -1,0 +1,36 @@
+services:
+  # Backend API Service
+  - type: web
+    name: booking-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:///./bookings.db
+      - key: ALLOWED_ORIGINS
+        value: "*"
+      - key: API_PREFIX
+        value: /api/v1
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    rootDir: backend
+
+  # Frontend Static Site
+  - type: web
+    name: booking-frontend
+    runtime: static
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_BACKEND_HOST
+        fromService:
+          name: booking-api
+          type: web
+          property: host
+    rootDir: frontend
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

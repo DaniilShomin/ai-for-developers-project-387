@@ -1,0 +1,500 @@
+openapi: 3.0.0
+info:
+  title: (title)
+  version: 0.0.0
+tags:
+  - name: Time Slots
+  - name: Bookings
+paths:
+  /bookings:
+    get:
+      operationId: Bookings_list
+      summary: Список бронирований
+      description: Получить список бронирований с деталями
+      parameters:
+        - $ref: '#/components/parameters/ListBookingsRequest.ownerId'
+        - $ref: '#/components/parameters/ListBookingsRequest.bookerId'
+        - $ref: '#/components/parameters/ListBookingsRequest.status'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookingWithDetails'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Bookings
+    post:
+      operationId: Bookings_create
+      summary: Создать бронирование
+      description: Создать новое бронирование
+      parameters: []
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: The request conflicts with the current state of the server.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Bookings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingCreate'
+  /bookings/{id}:
+    get:
+      operationId: Bookings_get
+      summary: Детали бронирования
+      description: Получить детали конкретного бронирования
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingWithDetails'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Bookings
+    delete:
+      operationId: Bookings_cancel
+      summary: Отменить бронирование
+      description: Отменить бронирование (soft delete)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: The request conflicts with the current state of the server.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Bookings
+  /timeslots:
+    get:
+      operationId: TimeSlots_list
+      summary: Список временных слотов
+      description: Получить список доступных временных слотов
+      parameters:
+        - $ref: '#/components/parameters/ListTimeSlotsRequest.ownerId'
+        - $ref: '#/components/parameters/ListTimeSlotsRequest.dateFrom'
+        - $ref: '#/components/parameters/ListTimeSlotsRequest.dateTo'
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TimeSlot'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Time Slots
+    post:
+      operationId: TimeSlots_create
+      summary: Создать слот
+      description: Создать новый временной слот (30 минут)
+      parameters: []
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeSlot'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: The request conflicts with the current state of the server.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Time Slots
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeSlotCreate'
+  /timeslots/{id}:
+    delete:
+      operationId: TimeSlots_delete
+      summary: Удалить слот
+      description: Удалить временной слот (только если не забронирован)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: 'There is no content to send for this request, but the headers may be useful. '
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: The request conflicts with the current state of the server.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Time Slots
+components:
+  parameters:
+    ListBookingsRequest.bookerId:
+      name: bookerId
+      in: query
+      required: false
+      description: ID записывающегося
+      schema:
+        type: string
+      explode: false
+    ListBookingsRequest.ownerId:
+      name: ownerId
+      in: query
+      required: false
+      description: ID владельца
+      schema:
+        type: string
+      explode: false
+    ListBookingsRequest.status:
+      name: status
+      in: query
+      required: false
+      description: Статус бронирования
+      schema:
+        $ref: '#/components/schemas/BookingStatus'
+      explode: false
+    ListTimeSlotsRequest.dateFrom:
+      name: dateFrom
+      in: query
+      required: false
+      description: Начальная дата
+      schema:
+        type: string
+        format: date-time
+      explode: false
+    ListTimeSlotsRequest.dateTo:
+      name: dateTo
+      in: query
+      required: false
+      description: Конечная дата
+      schema:
+        type: string
+        format: date-time
+      explode: false
+    ListTimeSlotsRequest.ownerId:
+      name: ownerId
+      in: query
+      required: true
+      description: ID владельца (обязательно)
+      schema:
+        type: string
+      explode: false
+  schemas:
+    Booker:
+      type: object
+      required:
+        - id
+        - name
+        - email
+        - createdAt
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор
+        name:
+          type: string
+          description: Имя
+        email:
+          type: string
+          description: Email для связи
+        phone:
+          type: string
+          description: Телефон (опционально)
+        createdAt:
+          type: string
+          format: date-time
+          description: Дата создания
+      description: Booker - Пользователь, записывающийся на звонок
+    Booking:
+      type: object
+      required:
+        - id
+        - timeSlotId
+        - bookerId
+        - status
+        - createdAt
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор
+        timeSlotId:
+          type: string
+          description: ID временного слота
+        bookerId:
+          type: string
+          description: ID записывающегося
+        notes:
+          type: string
+          description: Заметки к встрече
+        status:
+          allOf:
+            - $ref: '#/components/schemas/BookingStatus'
+          description: Статус бронирования
+        createdAt:
+          type: string
+          format: date-time
+          description: Дата создания
+      description: Booking - Бронирование временного слота
+    BookingCreate:
+      type: object
+      required:
+        - timeSlotId
+        - bookerName
+        - bookerEmail
+      properties:
+        timeSlotId:
+          type: string
+          description: ID временного слота
+        bookerName:
+          type: string
+          description: Имя записывающегося
+        bookerEmail:
+          type: string
+          description: Email записывающегося
+        bookerPhone:
+          type: string
+          description: Телефон (опционально)
+        notes:
+          type: string
+          description: Заметки
+      description: Данные для создания бронирования
+    BookingStatus:
+      type: string
+      enum:
+        - confirmed
+        - cancelled
+      description: Статус бронирования
+    BookingWithDetails:
+      type: object
+      required:
+        - id
+        - timeSlotId
+        - bookerId
+        - status
+        - createdAt
+        - timeSlot
+        - booker
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор
+        timeSlotId:
+          type: string
+          description: ID временного слота
+        bookerId:
+          type: string
+          description: ID записывающегося
+        notes:
+          type: string
+          description: Заметки
+        status:
+          allOf:
+            - $ref: '#/components/schemas/BookingStatus'
+          description: Статус
+        createdAt:
+          type: string
+          format: date-time
+          description: Дата создания
+        timeSlot:
+          allOf:
+            - $ref: '#/components/schemas/TimeSlot'
+          description: Детали слота
+        booker:
+          allOf:
+            - $ref: '#/components/schemas/Booker'
+          description: Данные записывающегося
+      description: Бронирование с полными деталями
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Код ошибки
+        message:
+          type: string
+          description: Сообщение об ошибке
+      description: Стандартная модель ошибки
+    TimeSlot:
+      type: object
+      required:
+        - id
+        - ownerId
+        - startTime
+        - endTime
+        - isBooked
+        - createdAt
+      properties:
+        id:
+          type: string
+          description: Уникальный идентификатор
+        ownerId:
+          type: string
+          description: ID владельца
+        startTime:
+          type: string
+          format: date-time
+          description: Время начала
+        endTime:
+          type: string
+          format: date-time
+          description: Время окончания (startTime + 30 мин)
+        isBooked:
+          type: boolean
+          description: Забронирован ли слот
+        createdAt:
+          type: string
+          format: date-time
+          description: Дата создания
+      description: TimeSlot - Временной слот на 30 минут
+    TimeSlotCreate:
+      type: object
+      required:
+        - ownerId
+        - startTime
+      properties:
+        ownerId:
+          type: string
+          description: ID владельца
+        startTime:
+          type: string
+          format: date-time
+          description: Время начала слота
+      description: Данные для создания временного слота
+servers:
+  - url: https://api.booking.example.com/v1
+    description: Production
+    variables: {}
+  - url: http://localhost:8000/api/v1
+    description: Local development
+    variables: {}

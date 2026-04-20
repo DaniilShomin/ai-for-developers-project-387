@@ -1,0 +1,176 @@
+/* Basic styles */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Booking Grid Layout */
+.booking-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr 320px;
+  gap: 24px;
+  max-width: 1200px;
+}
+
+@media (max-width: 1024px) {
+  .booking-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .booking-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .booking-grid > * {
+    min-height: auto;
+  }
+}
+
+.booking-panel {
+  height: fit-content;
+}
+
+/* Info Blocks */
+.info-block {
+  background: #f1f5f9;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+/* Custom Calendar Styles */
+.custom-calendar {
+  width: 100%;
+}
+
+.custom-calendar .mantine-Calendar-monthLevel {
+  width: 100%;
+}
+
+.custom-calendar .mantine-Calendar-month {
+  width: 100%;
+}
+
+/* Hide only buttons (arrows) in the Mantine month header, keep the month text */
+.custom-calendar .mantine-Calendar-monthHeader button {
+  display: none;
+}
+
+/* Custom calendar navigation buttons */
+.calendar-nav-btn {
+  border: 1px solid #e5e7eb;
+  background: white;
+}
+
+.calendar-nav-btn:hover {
+  background: #f9fafb;
+}
+
+.custom-calendar .mantine-Calendar-weekdaysRow {
+  margin-bottom: 8px;
+}
+
+.custom-calendar .mantine-Calendar-weekday {
+  color: #9ca3af;
+  font-size: 14px;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.custom-calendar .mantine-Calendar-day {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2px;
+}
+
+.custom-calendar .mantine-Calendar-day[data-outside] {
+  color: #9ca3af;
+}
+
+.custom-calendar .mantine-Calendar-day[data-weekend] {
+  color: #f97316;
+}
+
+/* Selected day - orange background */
+.custom-calendar .mantine-Calendar-day[data-selected] {
+  background-color: #f97316 !important;
+  color: white !important;
+}
+
+/* Today's date - orange border */
+.custom-calendar .mantine-Calendar-day[data-today]:not([data-selected]) {
+  border: 2px solid #f97316 !important;
+  color: #f97316 !important;
+  background-color: transparent !important;
+}
+
+/* Hover state */
+.custom-calendar .mantine-Calendar-day:hover:not([data-selected]):not([data-disabled]) {
+  background-color: #ffedd5;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  /* Smaller calendar days for mobile */
+  .custom-calendar .mantine-Calendar-day {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+    margin: 1px;
+  }
+
+  /* Reduce calendar header padding */
+  .custom-calendar .mantine-Calendar-monthHeader {
+    padding: 8px 4px;
+  }
+
+  /* Smaller weekday labels */
+  .custom-calendar .mantine-Calendar-weekday {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Compact calendar for mobile (< 480px) */
+  .custom-calendar .mantine-Calendar-day {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+    margin: 0.5px;
+  }
+
+  .custom-calendar .mantine-Calendar-weekday {
+    font-size: 10px;
+    padding: 2px;
+  }
+
+  .custom-calendar .mantine-Calendar-weekdaysRow {
+    margin-bottom: 4px;
+  }
+
+  .custom-calendar .mantine-Calendar-monthHeader {
+    padding: 4px;
+  }
+
+  /* Even smaller for very small screens (< 360px) */
+  @media (max-width: 360px) {
+    .custom-calendar .mantine-Calendar-day {
+      width: 26px;
+      height: 26px;
+      font-size: 11px;
+    }
+  }
+}

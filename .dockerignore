@@ -1,0 +1,69 @@
+# Docker build context exclusions
+# Ignores files that shouldn't be included in Docker build
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Node modules (large, will be installed fresh)
+node_modules
+**/node_modules
+
+# Python
+__pycache__
+**/__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist
+build
+.eggs
+.pytest_cache
+.coverage
+.tox
+*.cover
+*.log
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment files (security)
+.env
+.env.local
+.env.*.local
+.env.docker
+.env.example
+
+# Documentation
+*.md
+!README.md
+
+# Docker files themselves (to avoid cache issues)
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Test results
+frontend/test-results
+frontend/tests
+.playwright-mcp
+
+# Large data files
+*.db-journal
+*.sqlite-journal
+
+# CI/CD configs
+.github

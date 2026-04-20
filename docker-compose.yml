@@ -1,0 +1,49 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: booking-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:////app/data/bookings.db
+      - BACKEND_HOST=0.0.0.0
+      - BACKEND_PORT=8000
+      - API_PREFIX=/api/v1
+      - ALLOWED_ORIGINS=*
+    volumes:
+      - booking-data:/app/data
+    networks:
+      - booking-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: booking-frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - VITE_BACKEND_URL=http://backend:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - booking-network
+
+volumes:
+  booking-data:
+    driver: local
+
+networks:
+  booking-network:
+    driver: bridge
