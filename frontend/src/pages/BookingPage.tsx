@@ -661,6 +661,7 @@ export function BookingPage() {
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
             gap: '24px',
+            alignItems: 'stretch',
           }}
           className="booking-grid"
         >
